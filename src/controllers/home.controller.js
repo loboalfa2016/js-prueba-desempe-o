@@ -69,9 +69,41 @@ const resetMessage = () => {
   element.classList.remove("text-rose-500", "text-emerald-600");
 };
 
+let reservationsCache = [];
+
+const resetFormState = (form) => {
+  const editingReservationId = document.querySelector("#editingReservationId");
+  const submitButton = document.querySelector("#submitReservationButton");
+  const cancelEditBtn = document.querySelector("#cancelEditBtn");
+
+  if (editingReservationId) editingReservationId.value = "";
+  if (submitButton) submitButton.textContent = "Enviar solicitud";
+  if (cancelEditBtn) cancelEditBtn.classList.add("hidden");
+  if (form) form.reset();
+};
+
+const startEditMode = (reservation) => {
+  const form = document.querySelector("#reservationForm");
+  const editingReservationId = document.querySelector("#editingReservationId");
+  const submitButton = document.querySelector("#submitReservationButton");
+  const cancelEditBtn = document.querySelector("#cancelEditBtn");
+
+  if (!form || !editingReservationId || !submitButton || !cancelEditBtn) return;
+
+  form.workspace.value = reservation.workspace;
+  form.date.value = reservation.date;
+  form.startHour.value = reservation.startHour;
+  form.endHour.value = reservation.endHour;
+  form.reason.value = reservation.reason;
+  editingReservationId.value = reservation.id;
+  submitButton.textContent = "Guardar cambios";
+  cancelEditBtn.classList.remove("hidden");
+};
+
 const loadReservations = async (user) => {
   try {
     const reservations = await getReservations();
+    reservationsCache = reservations;
     const filteredReservations =
       user.role === "admin"
         ? reservations
@@ -81,7 +113,7 @@ const loadReservations = async (user) => {
     renderList(filteredReservations, user);
     return { reservations, filteredReservations };
   } catch (error) {
-    console.error("Error loading reservations:", error);
+    console.error("Error loading reservas:", error);
     showMessage("No se pudieron cargar las reservas.", true);
     renderList([], user);
     renderSummary([], user);
@@ -98,6 +130,13 @@ const handleAction = async (event, user) => {
   if (!reservationId) return;
 
   try {
+    if (action === "edit") {
+      const reservation = reservationsCache.find((item) => String(item.id) === String(reservationId));
+      if (!reservation) return;
+      startEditMode(reservation);
+      return;
+    }
+
     if (action === "approve") {
       await updateReservation(reservationId, { status: "approved" });
       showMessage("Reserva aprobada correctamente.");
@@ -114,6 +153,7 @@ const handleAction = async (event, user) => {
     }
 
     await loadReservations(user);
+    resetFormState(document.querySelector("#reservationForm"));
   } catch (error) {
     console.error(error);
     showMessage("No se pudo actualizar la reserva.", true);
@@ -132,6 +172,8 @@ export const homeController = async () => {
   }
 
   if (form) {
+    const cancelEditBtn = document.querySelector("#cancelEditBtn");
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       resetMessage();
@@ -141,6 +183,7 @@ export const homeController = async () => {
       const startHour = form.startHour.value;
       const endHour = form.endHour.value;
       const reason = form.reason.value.trim();
+      const editingReservationId = document.querySelector("#editingReservationId")?.value;
 
       if (!workspace || !date || !startHour || !endHour || !reason) {
         showMessage("Completa todos los campos para crear tu reserva.", true);
@@ -163,15 +206,26 @@ export const homeController = async () => {
       };
 
       try {
-        await createReservation(payload);
-        form.reset();
-        showMessage("Solicitud enviada con éxito.");
+        if (editingReservationId) {
+          await updateReservation(editingReservationId, payload);
+          showMessage("Reserva actualizada correctamente.");
+          resetFormState(form);
+        } else {
+          await createReservation(payload);
+          showMessage("Solicitud enviada con éxito.");
+          form.reset();
+        }
+
         await loadReservations(user);
       } catch (error) {
         console.error(error);
-        showMessage("No se pudo enviar la solicitud.", true);
+        showMessage("No se pudo guardar la reserva.", true);
       }
     });
+
+    if (cancelEditBtn) {
+      cancelEditBtn.addEventListener("click", () => resetFormState(form));
+    }
   }
 
   try {

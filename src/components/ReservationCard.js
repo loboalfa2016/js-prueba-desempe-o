@@ -2,6 +2,9 @@ export default function ReservationCard(reservation, currentUserId, currentUserR
   const { id, workspace, date, startHour, endHour, reason, status, userId } = reservation;
   const showApproveReject = currentUserRole === "admin" && status === "pending";
   const showCancel = currentUserRole === "user" && userId === currentUserId && status === "pending";
+  const showEdit =
+    currentUserRole === "admin" ||
+    (currentUserRole === "user" && userId === currentUserId && status === "pending");
   const badgeClass =
     status === "approved"
       ? "bg-emerald-100 text-emerald-700"
@@ -27,6 +30,7 @@ export default function ReservationCard(reservation, currentUserId, currentUserR
       </div>
 
       <div class="mt-5 flex flex-wrap gap-2">
+        ${showEdit ? `<button data-action="edit" data-id="${id}" class="rounded-2xl border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">Editar</button>` : ""}
         ${showApproveReject ? `<button data-action="approve" data-id="${id}" class="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-500">Aprobar</button>` : ""}
         ${showApproveReject ? `<button data-action="reject" data-id="${id}" class="rounded-2xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-400">Rechazar</button>` : ""}
         ${showCancel ? `<button data-action="cancel" data-id="${id}" class="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">Cancelar</button>` : ""}

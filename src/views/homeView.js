@@ -73,8 +73,10 @@ export default function homeView() {
                     <label class="block text-sm font-medium text-slate-700" for="reason">Motivo</label>
                     <textarea id="reason" name="reason" rows="3" required class="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20" placeholder="Reunión con el equipo"></textarea>
                   </div>
+                  <input type="hidden" id="editingReservationId" name="editingReservationId" />
                   <p id="formMessage" class="hidden text-sm text-emerald-600"></p>
-                  <button type="submit" class="mt-2 w-full rounded-2xl bg-emerald-600 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500">Enviar solicitud</button>
+                  <button id="submitReservationButton" type="submit" class="mt-2 w-full rounded-2xl bg-emerald-600 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500">Enviar solicitud</button>
+                  <button id="cancelEditBtn" type="button" class="hidden mt-2 w-full rounded-2xl border border-slate-300 bg-white py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Cancelar edición</button>
                 </form>
               </div>
               

@@ -25,7 +25,7 @@
   "reservations": [
     {
       "id": "1",
-      "userId": 2,
+      "userId": "1",
       "workspace": "Sala A",
       "date": "2026-01-15",
       "startHour": "08:00",
@@ -52,6 +52,16 @@
       "reason": "junta directiva de intel",
       "status": "approved",
       "id": "AvHCixWSXz8"
+    },
+    {
+      "userId": "1",
+      "workspace": "SALA B",
+      "date": "2000-03-12",
+      "startHour": "12:12",
+      "endHour": "17:00",
+      "reason": "hwaf",
+      "status": "approved",
+      "id": "PCwRJzRpv9U"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

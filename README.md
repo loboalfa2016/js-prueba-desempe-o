@@ -1,25 +1,22 @@
-# Cinema Booking SPA
+# Workspace Reservation System (PerformanceTestJS)
 
-A Single Page Application built with Vite, TailwindCSS and a mock JSON Server API for managing cinema functions and ticket reservations with role-based access.
+Lightweight SPA demonstrating workspace reservation flows using Vite, TailwindCSS and a JSON Server mock API.
 
-## Description
+## Features
 
-This project implements a cinema reservation system where:
+- Mocked user authentication
+- Role-based views (admin / user)
+- Create, list and manage reservations
+- Simple client-side routing
+- Modular structure and small footprint
 
-- **Admins** manage movie functions, seating capacity, and reservation approval.
-- **Users** browse available functions, reserve tickets, and manage their own reservations.
-- The application runs as a SPA with client-side routing, dynamic DOM rendering, and persisted session state.
+## Quick Start
 
-## Technologies used
+Requirements:
 
-- JavaScript (ES6+)
-- Vite
-- TailwindCSS
-- JSON Server
-- Concurrently
-- Fetch API
+- Node.js (16+ recommended)
 
-## Installation
+Install dependencies:
 
 ```bash
 npm install

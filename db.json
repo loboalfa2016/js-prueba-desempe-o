@@ -61,6 +61,7 @@
     {
       "id": "1",
       "userId": "1",
+<<<<<<< HEAD
       "functionId": "1",
       "quantity": 2,
       "reservedAt": "2026-06-01T14:00:00Z",
@@ -81,6 +82,64 @@
       "quantity": 3,
       "reservedAt": "2026-06-10T10:00:00Z",
       "status": "canceled"
+=======
+      "workspace": "Sala A",
+      "date": "2026-01-15",
+      "startHour": "20:00",
+      "endHour": "21:00",
+      "reason": "Sprint Planning",
+      "status": "approved"
+    },
+    {
+      "id": "2",
+      "userId": 3,
+      "workspace": "Sala B",
+      "date": "2026-01-15",
+      "startHour": "10:00",
+      "endHour": "11:00",
+      "reason": "Daily Meeting",
+      "status": "approved"
+    },
+    {
+      "userId": "1",
+      "workspace": "sala b",
+      "date": "2026-04-12",
+      "startHour": "13:00",
+      "endHour": "16:00",
+      "reason": "junta directiva de intel",
+      "status": "approved",
+      "id": "AvHCixWSXz8"
+    },
+    {
+      "userId": "1",
+      "workspace": "SALA B",
+      "date": "2000-03-12",
+      "startHour": "12:12",
+      "endHour": "17:00",
+      "reason": "hwaf",
+      "status": "approved",
+      "id": "PCwRJzRpv9U"
+    },
+    {
+      "userId": "1",
+      "workspace": "Sala A",
+      "date": "2025-03-12",
+      "startHour": "06:49",
+      "endHour": "17:50",
+      "reason": "df",
+      "status": "approved",
+      "id": "oFL2_77Os6Q"
+    },
+    {
+      "userId": "1",
+      "workspace": "sala A",
+      "date": "2026-01-15",
+      "startHour": "20:00",
+      "endHour": "21:00",
+      "reason": "we",
+      "status": "rejected",
+      "id": "oy3rCcu5w7k"
+>>>>>>> ad2f4a0 (update)
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -32,7 +32,7 @@ export default function ReservationCard(reservation, currentUserId, currentUserR
           <p class="mt-1 text-sm text-slate-500">${dateLabel}</p>
         </div>
         <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${badgeClass}">
-          ${status}
+          ${status}Env
         </span>
       </div>
 

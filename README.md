@@ -1,119 +1,128 @@
-# Workspace Reservation System (PerformanceTestJS)
+# Cinema Booking SPA
 
-Lightweight SPA demonstrating workspace reservation flows using Vite, TailwindCSS and a JSON Server mock API.
+A Single Page Application built with Vite, TailwindCSS and a mock JSON Server API for managing cinema functions and ticket reservations with role-based access.
 
-## Features
+## Description
 
-- Mocked user authentication
-- Role-based views (admin / user)
-- Create, list and manage reservations
-- Simple client-side routing
-- Modular structure and small footprint
+This project implements a cinema reservation system where:
 
-## Quick Start
+- **Admins** manage movie functions, seating capacity, and reservation approval.
+- **Users** browse available functions, reserve tickets, and manage their own reservations.
+- The application runs as a SPA with client-side routing, dynamic DOM rendering, and persisted session state.
 
-Requirements:
+## Technologies used
 
-- Node.js (16+ recommended)
+- JavaScript (ES6+)
+- Vite
+- TailwindCSS
+- JSON Server
+- Concurrently
+- Fetch API
 
-Install dependencies:
+## Installation
 
 ```bash
 npm install
 ```
 
-Run development (frontend + mock API):
+## Running the project
 
 ```bash
 npm run dev
 ```
 
-- Frontend served by Vite (shown in terminal, e.g. `http://localhost:5173`)
-- Mock API served by JSON Server at `http://localhost:3000`
+This command starts both:
 
-Build for production:
+- Vite frontend
+- JSON Server mock backend on `http://localhost:3000`
 
-```bash
-npm run build
-```
-
-Preview production build:
+## Running json-server separately
 
 ```bash
-npm run preview
-```
-
-If you prefer to run services separately, you can run the frontend or the API individually:
-
-```bash
-# frontend only
-npm run client
-
-# mock API only
 npm run server
 ```
 
-## Technologies
+If you want to run just the frontend:
 
-| Area | Technology |
-|---|---|
-| Language | JavaScript (ES6+) |
-| Bundler / Dev server | Vite |
-| Styling | TailwindCSS |
-| Mock API | JSON Server |
-| Process runner | Concurrently |
-| Markup | HTML5 |
-| Stylesheet | CSS3 |
-| Runtime | Node.js |
+```bash
+npm run client
+```
 
-## Default test credentials
+## API Endpoints
+
+The mock API is served by JSON Server from `db.json`.
+
+- `GET /users`
+- `GET /functions`
+- `POST /functions`
+- `PATCH /functions/:id`
+- `DELETE /functions/:id`
+- `GET /reservations`
+- `POST /reservations`
+- `PATCH /reservations/:id`
+- `DELETE /reservations/:id`
+
+## Test users
 
 - Admin: `admin@test.com` / `A123456`
 - User: `user@test.com` / `A123456`
+- User: `user2@test.com` / `A123456`
 
-## API (JSON Server)
+## Role permissions
 
-The mock API endpoints are defined in `db.json`:
+### Admin
 
-- `GET /users` — list users
-- `GET /reservations` — list reservations
-- `POST /reservations` — create reservation
-- `PATCH /reservations/:id` — update reservation
-- `DELETE /reservations/:id` — delete reservation
+- View all reservations
+- Confirm or cancel reservations
+- Create, edit, cancel, and delete cinema functions
+- View all functions and seats availability
+
+### User
+
+- Browse available cinema functions
+- Reserve tickets for a selected function
+- Edit own reservation before the function starts
+- Cancel own reservation
+- See only own reservations
 
 ## Project structure
 
 ```
 src/
-  ├─ api/           # http client wrapper
-  ├─ components/    # UI components (Sidebar, ReservationCard)
-  ├─ controllers/   # controllers (login, home)
-  ├─ router/        # small client-side router
-  ├─ services/      # reservation service
-  ├─ views/         # view templates
-  ├─ main.js        # app entry
-  └─ style.css      # Tailwind entry + small custom rules
-db.json             # mock data for JSON Server
+  ├─ api/           # HTTP client wrapper
+  ├─ components/    # Reusable UI components
+  ├─ controllers/   # View controllers and business logic
+  ├─ router/        # Simple SPA router and guards
+  ├─ services/      # API service modules
+  ├─ views/         # Page templates
+  ├─ main.js        # Application entry
+  └─ style.css      # Tailwind and custom styling
+db.json             # mock database for JSON Server
 package.json
+vite.config.js
 ```
+
+## Technical decisions
+
+- Session persistence is implemented with `localStorage` for login state.
+- The router protects `/home` and redirects unauthenticated users.
+- The application uses separate services for reservations and functions.
+- Function availability is calculated using `availableSeats` and reservation updates.
+- Reservations use status values: `pending`, `confirmed`, and `canceled`.
+- Admin-only actions are hidden from standard users.
 
 ## Notes and troubleshooting
 
-- If `npm run dev` starts Vite on a different port (e.g. 5174), open the URL shown in the terminal.
-- If the JSON Server fails because port `3000` is in use, run the mock API on another port:
+- If Vite starts on a different port, use the URL shown in the terminal.
+- If port `3000` is already in use, change the JSON Server port and update `API_URL` in `src/api/http.js`.
+- If you see `Unchecked runtime.lastError: The message port closed before a response was received`, this is typically caused by a browser extension or external plugin, not by this SPA code.
 
-```bash
-npx json-server --watch db.json --port 3001
-```
+## Running the app
 
-and update `API_URL` in `src/api/http.js`.
-
-## Next steps (optional)
-
-- Add real authentication and user management
-- Persist data to a real backend
-- Add tests and CI
+1. Install dependencies: `npm install`
+2. Start the app: `npm run dev`
+3. Open the URL shown by Vite in your browser
 
 ---
 
-If you want, I can add the `client` and `server` scripts to `package.json` so you can run them separately.
+The application now supports cinema function management, seat availability, role-based reservation controls, and an English project README.

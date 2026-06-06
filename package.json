@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite\" \"json-server --watch db.json --port 3000\"",
+    "client": "vite",
+    "server": "json-server --watch db.json --port 3000",
     "build": "vite build",
     "preview": "vite preview"
   },

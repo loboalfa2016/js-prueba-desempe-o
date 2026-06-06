@@ -15,11 +15,11 @@ export default function Sidebar() {
     <aside class="w-72 min-h-screen bg-slate-950 text-white p-6 flex flex-col justify-between border-r border-slate-800">
       <div>
         <h2 class="text-3xl font-semibold tracking-tight text-emerald-300 mb-6">
-          Trello
+          Cinema Booking
         </h2>
 
         <p class="max-w-[14rem] text-sm leading-6 text-slate-400 mb-8">
-          Gestiona reservas de espacios con un panel claro, rápido y ligero.
+          Manage cinema functions, reservations and seats in a clear role-based dashboard.
         </p>
 
         <nav class="flex flex-col gap-3">

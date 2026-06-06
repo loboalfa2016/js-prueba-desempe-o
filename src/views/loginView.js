@@ -52,10 +52,11 @@ export default function loginView() {
         </form>
 
         <div class="mt-8 rounded-[1.5rem] bg-slate-900/85 p-5 text-sm text-slate-400 shadow-inner shadow-slate-950/20">
-          <p class="font-semibold text-slate-200">Credenciales de prueba</p>
+          <p class="font-semibold text-slate-200">Demo credentials</p>
           <ul class="mt-3 list-disc space-y-1 pl-5">
             <li>admin@test.com / A123456</li>
             <li>user@test.com / A123456</li>
+            <li>user2@test.com / A123456</li>
           </ul>
         </div>
       </div>

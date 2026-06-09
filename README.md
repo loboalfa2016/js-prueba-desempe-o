@@ -1,120 +1,97 @@
 # Cinema Booking SPA
 
-Aplicación Single Page Application (SPA) construida con Vite, TailwindCSS y JSON Server para administrar funciones de cine y reservas de boletos.
+## Project name
 
-## Características
+Cinema Booking SPA
 
-- Autenticación de usuarios con datos de prueba
-- Vistas basadas en roles (`admin` / `user`)
-- Gestión de funciones de cine (crear, editar, cancelar, eliminar)
-- Gestión de reservas de boletos
-- Enrutamiento SPA en cliente
-- Estructura modular con servicios, controladores, vistas y componentes
+## Description
 
-## Requisitos
+A Single Page Application for managing cinema showtimes and ticket reservations with role-based access control. The app uses a mock JSON Server backend and allows admins to manage movie functions while regular users can book and manage their own reservations.
 
-- Node.js 16 o superior
+## Technologies used
 
-## Instalación
+- JavaScript (ES6+)
+- Vite
+- TailwindCSS
+- JSON Server
+- Fetch API
+- `localStorage`
+
+## Installation
 
 ```bash
 npm install
 ```
 
-## Ejecutar el proyecto
+## Running the project
 
 ```bash
 npm run dev
 ```
 
-Este comando inicia:
+This starts the frontend and the mock backend together.
 
-- Vite frontend
-- JSON Server mock backend en `http://localhost:3000`
-
-## Ejecutar solo el backend simulado
+## Running json-server
 
 ```bash
 npm run server
 ```
 
-## Ejecutar solo el frontend
+This starts only the JSON Server mock backend on `http://localhost:3000`.
+
+If you want to run only the frontend:
 
 ```bash
 npm run client
 ```
 
-## Endpoints de la API
-
-La API simulada se sirve desde `db.json` con JSON Server.
-
-- `GET /users`
-- `GET /functions`
-- `POST /functions`
-- `PATCH /functions/:id`
-- `DELETE /functions/:id`
-- `GET /reservations`
-- `POST /reservations`
-- `PATCH /reservations/:id`
-- `DELETE /reservations/:id`
-
-## Usuarios de prueba
+## Test users
 
 - Admin: `admin@test.com` / `A123456`
-- Usuario: `user@test.com` / `A123456`
-- Usuario 2: `user2@test.com` / `A123456`
+- User: `user@test.com` / `A123456`
+- User 2: `user2@test.com` / `A123456`
 
-## Permisos por rol
+## Role permissions
 
 ### Admin
 
-- Ver todas las reservas
-- Confirmar o cancelar reservas
-- Crear, editar, cancelar y eliminar funciones de cine
-- Ver todas las funciones y la disponibilidad de asientos
+- View all reservations
+- Confirm or cancel reservations
+- Create, edit, cancel, and delete cinema functions
+- View all functions and seat availability
 
-### Usuario
+### User
 
-- Ver funciones disponibles
-- Reservar boletos para una función
-- Editar sus propias reservas antes de que empiece la función
-- Cancelar sus propias reservas
-- Ver solo sus propias reservas
+- Browse available functions
+- Reserve tickets for a selected function
+- Edit own reservation before the function start time
+- Cancel own reservation
+- View only own reservations
 
-## Estructura del proyecto
+## Project structure
 
 ```
 src/
-  ├─ api/           # Cliente HTTP para la API
-  ├─ components/    # Componentes reutilizables de UI
-  ├─ controllers/   # Lógica de control de vistas
-  ├─ router/        # Enrutamiento SPA y guardas
-  ├─ services/      # Llamadas a la API y endpoints
-  ├─ views/         # Plantillas de páginas
-  ├─ main.js        # Entrada de la aplicación
-  └─ style.css      # Tailwind y estilos personalizados
+  ├─ api/           # HTTP client wrapper for backend calls
+  ├─ components/    # Reusable UI components
+  ├─ controllers/   # Business logic and event handling
+  ├─ router/        # Client-side routing and route protection
+  ├─ services/      # API service modules
+  ├─ views/         # Page templates for each route
+  ├─ main.js        # Application entry point
+  └─ style.css      # Tailwind and custom styling
 
-db.json             # Base de datos simulada para JSON Server
-package.json        # Scripts y dependencias
-vite.config.js      # Configuración de Vite y alias
+db.json             # Mock database for JSON Server
+package.json        # Scripts and dependencies
+vite.config.js      # Vite configuration and path aliases
 ```
 
-## Decisiones técnicas
+## Technical decisions
 
-- La sesión de usuario se guarda en `localStorage` para persistencia entre recargas.
-- El router protege la ruta `/home` y redirige a `/` si no hay sesión activa.
-- `src/api/http.js` centraliza las llamadas HTTP y maneja errores de respuesta.
-- `src/services/` encapsula los endpoints de funciones y reservas.
-- Las funciones usan `availableSeats` para calcular la disponibilidad de asientos.
-- El rol del usuario controla la visibilidad de acciones administrativas.
-
-## Notas
-
-- Si Vite arranca en otro puerto, usa la URL que muestra el terminal.
-- Si el puerto `3000` está en uso, actualiza el puerto de JSON Server y `API_URL` en `src/api/http.js`.
-
-## Uso básico
-
-1. Instala dependencias: `npm install`
-2. Inicia el proyecto: `npm run dev`
-3. Abre la URL que muestra Vite en el navegador
+- Session persistence is implemented with `localStorage` to keep the user logged in between page reloads.
+- Routing uses `history.pushState()` to enable SPA navigation without full page reloads.
+- The router protects `/home` and redirects unauthenticated users to the login page.
+- API calls are centralized in `src/api/http.js` to handle fetch requests and JSON parsing.
+- Service modules in `src/services/` encapsulate function and reservation endpoints.
+- The UI logic is separated into controllers, views, and reusable components.
+- Reservation availability is managed using `availableSeats` on function records.

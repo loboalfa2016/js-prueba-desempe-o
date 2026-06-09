@@ -1,20 +1,25 @@
 # Sustentación del proyecto: Cinema Booking SPA
 
 ## 1. Resumen
-Esta aplicación es una Single Page Application (SPA) que permite la gestión de funciones de cine y reservas de boletos con dos roles: administrador y usuario estándar. Está construida con JavaScript moderno, Vite, JSON Server y `localStorage` para persistencia de sesión.
+Esta aplicación es una Single Page Application (SPA) para administrar funciones de cine y reservas de boletos. Tiene dos roles principales:
+- `admin`: gestiona funciones y reservas.
+- `user`: reserva y administra sus propias reservas.
+
+La solución se construyó con JavaScript moderno, Vite, TailwindCSS y JSON Server, y usa `localStorage` para mantener la sesión del usuario.
 
 ## 2. Cumplimiento de requerimientos (15%)
-Este proyecto implementa los requerimientos solicitados de forma directa:
-- Login y autenticación de usuarios con datos de prueba en `db.json`.
-- Gestión de funciones de cine: creación, edición, cancelación y eliminación por el administrador.
-- Reserva de boletos por parte del usuario, incluyendo edición y cancelación de reservas propias.
-- Control de acceso basado en roles para mostrar solo acciones válidas según el usuario.
-- Visualización de funciones y reservas con datos reales desde un backend simulado.
+El proyecto cumple los requerimientos solicitados:
+- Inicio de sesión con usuarios de prueba definidos en `db.json`.
+- Gestión de funciones de cine por parte del administrador.
+- Reserva de boletos por parte de usuarios regulares.
+- Control de acceso basado en roles que modifica la UI y las opciones disponibles.
+- Persistencia de sesión en el navegador para mantener al usuario conectado.
 
-### Evidencia
-- Archivos clave: `src/controllers/login.controller.js`, `src/controllers/home.controller.js`, `src/services/function.service.js`, `src/services/reservation.service.js`.
-- Backend simulado: `db.json` y `json-server` en los scripts de `package.json`.
-- Funcionalidad de reservas actualiza el inventario de asientos disponibles en cada función.
+### Evidencia técnica
+- `src/controllers/login.controller.js`: valida credenciales y guarda sesión.
+- `src/router/router.js`: protege rutas y carga vistas sin recargar la página.
+- `src/utils.js`: maneja `localStorage` y valida roles.
+- `src/services/`: encapsula llamadas a la API a `db.json`.
 
 #### Ejemplo de login en `src/controllers/login.controller.js`
 ```js
@@ -25,29 +30,30 @@ form.addEventListener("submit", async (e) => {
   const users = await http.get(
     `/users?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
   );
-  if (!users.length) throw new Error("Credenciales incorrectas.");
+  if (!users.length) {
+    showError("Credenciales incorrectas.");
+    return;
+  }
   saveSession({ id: users[0].id, name: users[0].name, role: users[0].role });
   navigateTo("/home");
 });
 ```
-Este bloque captura el evento `submit` del formulario de login y evita la recarga de página con `e.preventDefault()`. Luego lee los valores de email y contraseña, los encadena en una consulta segura con `encodeURIComponent`, y pide al backend simulado `json-server` los usuarios que coincidan.
-Si no hay coincidencias, lanza un error de credenciales; si el login es válido, guarda el usuario en sesión mediante `saveSession()` y navega a `/home` con `navigateTo()`.
+Este código valida el formulario, consulta el backend simulado y, si el usuario existe, guarda la sesión y redirige a la vista principal.
 
 ## 3. Comprensión de JavaScript (10%)
-El código demuestra comprensión de conceptos centrales de JavaScript:
-- Módulos ES6 y import/export en `src/main.js`, `src/router/router.js`, `src/utils.js`, componentes y servicios.
-- Manejo de promesas con `async/await` en los controladores y en el cliente HTTP.
-- Uso de funciones puras y utilitarias en `src/controllers/home.controller.js` para filtrar, ordenar y renderizar datos.
-- Acceso condicional, operadores lógicos y manejo de nullish (`?.`) en `src/utils.js` y vistas.
-- Separación de responsabilidades entre renderizado, lógica de negocio y llamadas a API.
+El proyecto demuestra conocimientos de JavaScript con:
+- Módulos ES6 y alias (`@`, `@services`, `@components`, etc.).
+- `async/await` para manejar llamadas asíncronas a la API.
+- Funciones puras y utilitarias para el renderizado y filtrado de datos.
+- Uso de operadores lógicos, `?.` y manejo de valores `null`/`undefined`.
+- Separación clara entre controlador, servicios, vistas y componentes.
 
 ## 4. Enrutamiento SPA (15%)
-El enrutamiento del proyecto es un router cliente simple pero efectivo:
-- `src/router/router.js` define rutas para `/` y `/home`.
-- SPA usando `history.pushState()` para cambiar la URL sin recargar la página.
-- `window.onpopstate` permite navegar con los botones de retroceso y avance.
-- Protección de ruta: si el usuario intenta acceder a `/home` sin sesión activa, la aplicación redirige a `/`.
-- Si el usuario autenticado vuelve a `/`, se redirige automáticamente a `/home`.
+El enrutamiento usa el History API para cambiar la ruta sin recargar:
+- `navigateTo(path)` actualiza la URL con `history.pushState()`.
+- `router()` elige la vista correcta y renderiza en `#app`.
+- Protege `/home` para usuarios no autenticados.
+- Redirige a `/home` si un usuario con sesión intenta acceder a `/`.
 
 #### Código de router en `src/router/router.js`
 ```js
@@ -64,26 +70,29 @@ export const navigateTo = (path) => {
 export const router = () => {
   const app = document.querySelector("#app");
   let path = window.location.pathname;
+
   if (path === "/home" && !isAuthenticated()) {
     path = "/";
     history.replaceState({}, "", "/");
   }
+
   if (path === "/" && isAuthenticated()) {
     path = "/home";
     history.replaceState({}, "", "/home");
   }
+
   app.innerHTML = (routes[path] || notFoundView)();
 };
 ```
-Este router define el mapa de rutas de la SPA. `navigateTo()` cambia la URL sin recargar la página usando `history.pushState()`, y luego vuelve a ejecutar la función `router()` para renderizar la vista adecuada.
-La función `router()` obtiene la ruta actual y aplica guardas de acceso: si se intenta ir a `/home` sin estar autenticado se redirige a `/`, y si un usuario autenticado accede a `/` se le redirige a `/home`. Finalmente imprime la vista en el elemento `#app`.
+Este router asegura navegación SPA y guarda la seguridad básica de acceso a `/home`.
 
 ## 5. Persistencia y manejo de sesión (10%)
-La sesión se maneja con `localStorage` y utilidades especiales:
-- `src/utils.js` implementa `saveSession()`, `getSession()`, `removeSession()`, `isAuthenticated()` e `isAdmin()`.
-- En `src/controllers/login.controller.js` se guarda el usuario autenticado después de validar credenciales.
-- El estado de sesión persiste entre recargas del navegador mientras el usuario no cierre la sesión.
-- La aplicación usa el rol guardado en sesión para decidir qué acciones debe mostrar y cuáles debe ocultar.
+La sesión se guarda en `localStorage` para que el usuario permanezca autenticado tras recargar:
+- `saveSession(user)`: guarda el usuario actual.
+- `getSession()`: recupera el usuario de `localStorage`.
+- `removeSession()`: cierra sesión.
+- `isAuthenticated()`: detecta si hay sesión activa.
+- `isAdmin()`: identifica el rol de administrador.
 
 #### Código de sesión en `src/utils.js`
 ```js
@@ -99,35 +108,34 @@ export const isAuthenticated = () => !!getSession();
 
 export const isAdmin = () => getSession()?.role === "admin";
 ```
-`saveSession()` almacena el objeto de usuario en `localStorage` como JSON para que sea persistente entre recargas. `getSession()` recupera y convierte ese JSON de nuevo a objeto JavaScript. `removeSession()` elimina el usuario cuando se cierra sesión.
-`isAuthenticated()` devuelve `true` si hay un usuario guardado, y `isAdmin()` comprueba el rol del usuario para habilitar o deshabilitar funciones de administrador.
+Estas funciones permiten al frontend usar la información del usuario para proteger rutas y mostrar acciones según el rol.
 
 ## 6. Documentación (10%)
-Este repositorio cuenta con documentación clara y ordenada:
-- `README.md` describe la instalación, ejecución, estructura de carpetas, endpoints API y usuarios de prueba.
-- `Sustentacion.md` documenta la arquitectura, las decisiones técnicas y la evidencia del cumplimiento de los criterios.
-- El código está organizado en carpetas con propósito definido: `api`, `components`, `controllers`, `router`, `services`, `views`.
-- `package.json` incluye scripts claros para desarrollo y servidor de mock API.
+Este repositorio incluye:
+- `README.md`: instalación, ejecución, estructura y permisos de rol.
+- `Sustentacion.md`: explicación técnica, ejemplos de código y criterios de evaluación.
+- `package.json`: scripts para `dev`, `client` y `server`.
+- `db.json`: datos de usuarios, funciones y reservas.
 
 ## 7. Sustentación técnica (40%)
 ### Arquitectura
-La aplicación sigue un patrón modular:
-- `src/api/http.js` centraliza las llamadas HTTP a `http://localhost:3000`.
-- `src/services/` encapsula los endpoints de funciones y reservas.
-- `src/controllers/` coordina el flujo entre vistas, servicios y utilidades.
-- `src/views/` genera los templates HTML para cada página.
-- `src/components/` contiene fragmentos reutilizables como tarjetas de función y reserva.
+El proyecto usa una arquitectura modular:
+- `src/api/http.js`: cliente HTTP centralizado.
+- `src/services/`: acceso a datos de funciones y reservas.
+- `src/controllers/`: lógica de interacción y validación.
+- `src/views/`: plantillas HTML de las páginas.
+- `src/components/`: tarjetas reutilizables y barra lateral.
 
 ### Flujo de autenticación
-1. El usuario ingresa correo y contraseña en el formulario de login.
-2. `login.controller.js` llama a `http.get('/users?...')` para validar credenciales.
-3. Si la validación es correcta, guarda la sesión con `saveSession()` y navega a `/home`.
-4. El router protege `/home` mediante `isAuthenticated()`.
+1. El usuario ingresa correo y contraseña.
+2. `login.controller.js` consulta `GET /users` en JSON Server.
+3. Si coincide, guarda sesión y navega a `/home`.
+4. El router bloquea `/home` si no hay sesión.
 
 ### Manejo de datos y API
-- `src/api/http.js` usa `fetch()` con cabeceras JSON y lanza errores si la respuesta no es `ok`.
-- Los servicios usan `GET`, `POST`, `PATCH` y `DELETE` para manipular datos en `db.json`.
-- Aunque el backend es simulado, la lógica del frontend se diseña como si fuera una API REST real.
+- `src/api/http.js` usa `fetch()` y maneja errores de respuesta.
+- Los servicios exponen `get`, `post`, `patch` y `delete`.
+- Los recursos se guardan en `db.json` con JSON Server.
 
 #### Código de cliente HTTP en `src/api/http.js`
 ```js
@@ -147,9 +155,7 @@ export const http = {
   delete: (endpoint) => request(endpoint, { method: "DELETE" }),
 };
 ```
-`request()` es la función base que construye la petición `fetch()` hacia el backend simulado. Añade siempre el encabezado `Content-Type: application/json` para indicar que se envían y reciben datos JSON. Si la respuesta tiene un estado distinto de `ok`, la función lanza un error para consolidar el manejo de fallos en un solo lugar.
-
-La variable `http` expone métodos `get`, `post`, `patch` y `delete` para simplificar el uso de la API desde los servicios. Cada método transforma los datos a JSON cuando es necesario.
+Esto centraliza las peticiones y evita duplicar lógica.
 
 #### Código de servicio de funciones y reservas
 ```js
@@ -164,34 +170,34 @@ export const createReservation = (data) => http.post("/reservations", data);
 export const updateReservation = (id, data) => http.patch(`/reservations/${id}`, data);
 export const removeReservation = (id) => http.delete(`/reservations/${id}`);
 ```
-Los servicios encapsulan llamadas a rutas concretas del backend. Esto evita repetir URLs en varias partes del proyecto y hace que la lógica de acceso a datos sea fácil de reutilizar. `getFunctions()` y `getReservations()` obtienen listas, mientras que `create*`, `update*` y `remove*` modifican los recursos en `db.json`.
+Los servicios abstraen las rutas y hacen el código más mantenible.
 
 ### Gestión de reservas y funciones
-- `home.controller.js` carga funciones y reservas desde la API y mantiene caches locales.
-- Los usuarios solo ven sus reservas; los administradores ven todas.
-- La selección de función muestra asientos disponibles y actualiza el estado en tiempo real.
-- La aplicación permite editar reservas, cambiar status y cancelar reservas con cambios reflejados en el backend.
+- `home.controller.js` carga y renderiza funciones y reservas.
+- Los usuarios solo ven sus reservas; el admin ve todas.
+- Las funciones muestran asientos disponibles actualizados.
+- Las reservas se pueden editar, cancelar o eliminar según el rol.
 
 ### Control de roles
-- El rol del usuario se guarda en la sesión.
-- Acciones administrativas (crear o editar funciones, ver todas las reservas) solo se muestran si `isAdmin()` es true.
-- Usuarios regulares no pueden acceder a endpoints de administrador desde la interfaz.
+- `isAdmin()` permite acciones exclusivas de administrador.
+- Los botones de editar/reservar se muestran según el rol.
+- El sistema evita accesos no autorizados en la UI.
 
 ### Consideraciones de robustez
-- La aplicación valida campos del formulario de login.
-- Muestra errores de conexión a la API cuando fallan las peticiones.
-- Protege rutas y mantiene el estado correcto después de recargas o retrocesos del navegador.
+- Validación de formularios en login, función y reserva.
+- Manejo de errores en las llamadas a API.
+- Mensajes de estado para el usuario.
 
 ## 8. Retos y soluciones
-- Control de acceso: se resolvió con protección de rutas y validación de sesión antes de renderizar `/home`.
-- Alimentación de datos en tiempo real: se sincroniza `availableSeats` de funciones cuando se crea, actualiza o elimina una reserva.
-- Organización del proyecto: separar servicios, controladores y vistas ayudó a mantener el código legible y extensible.
+- Protección de ruta: se implementó en el router para `/home`.
+- Sincronización de asientos: se actualiza `availableSeats` al crear/cancelar reservas.
+- Código modular: separar services, controllers, views y components mejoró el mantenimiento.
 
 ## 9. Conclusión
-El proyecto cumple con los criterios de evaluación al implementar un SPA con enrutamiento, persistencia de sesión, gestión de roles y documentación suficiente. La evidencia técnica muestra que se usó JavaScript moderno y una arquitectura modular adecuada para el caso de uso.
+El proyecto está actualizado y cumple con los criterios de una SPA funcional con enrutamiento, persistencia de sesión y control de roles. La implementación muestra un uso efectivo de JavaScript moderno y una estructura modular.
 
 ## 10. Mejoras futuras
-- Sustituir JSON Server por un backend real con autenticación segura.
-- Añadir validaciones más completas en los formularios y manejo de errores de negocio.
-- Incluir filtros de búsqueda por película, fecha y sala.
-- Agregar notificaciones visuales o por correo al confirmar reservas.
+- Migrar JSON Server a un backend real con autenticación segura.
+- Validar mejor formularios y errores de negocio.
+- Añadir filtros de búsqueda por película, fecha o sala.
+- Agregar notificaciones o correo para confirmaciones.
